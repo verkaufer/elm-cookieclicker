@@ -1,11 +1,17 @@
 module Main where
 
-import CookieClicker exposing (initGame, view, clickCookie)
+import CookieClicker exposing (initGame, view, update, ticker)
 import Html exposing (..)
-import Signal exposing (Signal, Address)
-import StartApp.Simple as StartApp
-
+import StartApp
+import Effects exposing (..)
 
 -- wire the entire application together
+app = 
+    StartApp.start { init = (initGame, Effects.none)
+                   , update = update, 
+                   , view = view, 
+                   , inputs = [ticker]
+                   }
+
 main =
-    StartApp.start { model = initGame, view = view, update = clickCookie}
+    app.html

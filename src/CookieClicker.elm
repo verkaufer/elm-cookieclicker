@@ -3,36 +3,39 @@ module CookieClicker where
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Signal exposing (Signal, Address)
+import Signal exposing (Signal, Address, map)
 import String
-
+import Time exposing (second, every)
+import Effects exposing (..)
 -- Model
 
 type State = Play | Pause
 
 type alias Game =
-    { points : Int -- aka Cookies Clicked
+    { clicks : Int -- aka Cookies Clicked
     , level : Int
+    , cps_multiplier : Float
     } 
-
-type alias Award = 
-    { id : Int
-    , title : String
-    }
 
 initGame : Game
 initGame = 
-    { points = 0
+    { clicks = 0
     , level = 1
+    , cps_multiplier = 1.7
     }
 
 -- Update
 
 type Action = Increment
 
-clickCookie action game =
+ticker : Signal Action
+ticker = Signal.map (always Increment) (Time.every Time.second)
+
+update : Action -> Game -> (Game, Effects.Effects Action)
+update action game =
     case action of
-        Increment -> { game | points = game.points + 1 }
+        Increment -> ( {game | clicks = game.clicks + round (1 * game.cps_multiplier)}, Effects.none )
+        -- TODO: Consider changing `round` to floor or ceiling
 
 -- View
 
@@ -41,5 +44,5 @@ view address game =
 
     div []
         [ img [ src "assets/cookie.jpeg", onClick address Increment ] []
-        , div [] [text (toString game.points)]
+        , div [] [text (toString game.clicks)]
         ]
