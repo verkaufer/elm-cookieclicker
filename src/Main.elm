@@ -8,8 +8,8 @@ import Effects exposing (..)
 -- wire the entire application together
 app = 
     StartApp.start { init = (initGame, Effects.none)
-                   , update = update, 
-                   , view = view, 
+                   , update = update
+                   , view = view
                    , inputs = [ticker]
                    }
 
